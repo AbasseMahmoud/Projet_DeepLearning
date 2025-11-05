@@ -95,7 +95,17 @@ const analyzeImage = async () => {
 
     if (data.error) {
       alert("Erreur : " + data.error);
-    } else {
+    }
+      if (data.prediction === "Inconnue") {
+      setPrediction({
+        class: "Inconnue",
+        confidence: Math.round(data.confidence),
+        isInfected: false,
+      });
+      return;
+    }
+
+    else {
       // Adapter selon la réponse du backend Flask
       setPrediction({
         class: data.prediction,
