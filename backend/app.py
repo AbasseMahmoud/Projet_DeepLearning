@@ -8,7 +8,7 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://localhost:3000", "https://ton-front.vercel.app", "*"]}})
 # Charger le meilleur modèle entraîné
 model = tf.keras.models.load_model("Model/best_model.h5")
 
