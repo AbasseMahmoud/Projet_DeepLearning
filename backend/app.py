@@ -64,7 +64,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Liste des classes selon ton dataset
+# Liste des classes du dataset
 classes = ['Parasitée', 'Non infectée']
 
 # Lazy loading du modèle
@@ -96,8 +96,11 @@ def predict():
         prediction = model.predict(img_array)
 
         # Calcul correct de la classe et de la confiance
+        # Calcul correct de la classe et de la confiance
         if prediction.shape[1] == 1:  # binaire
             prob = float(prediction[0][0])
+            # Clamp la valeur entre 0 et 1
+            prob = min(max(prob, 0.0), 1.0)
             if prob >= 0.5:
                 predicted_class = 'Parasitée'
                 confidence = prob * 100
@@ -105,9 +108,10 @@ def predict():
                 predicted_class = 'Non infectée'
                 confidence = (1 - prob) * 100
         else:  # multi-classes
+            max_prob = float(np.max(prediction))
+            max_prob = min(max(max_prob, 0.0), 1.0)
             predicted_class = classes[np.argmax(prediction)]
-            confidence = float(np.max(prediction)) * 100
-
+            confidence = max_prob * 100
         return jsonify({
             'prediction': predicted_class,
             'confidence': round(confidence, 2)  # arrondi à 2 décimales
