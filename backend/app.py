@@ -94,6 +94,8 @@ def predict():
 
         model = get_model()
         prediction = model.predict(img_array)
+        print("Valeur renvoyée par le modèle :", prediction)
+
 
         # Calcul correct de la classe et de la confiance
         # Calcul correct de la classe et de la confiance
