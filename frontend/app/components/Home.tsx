@@ -1,5 +1,7 @@
+
 'use client'
 import React, { useState, useRef } from 'react';
+
 
 export default function Home() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -8,20 +10,22 @@ export default function Home() {
     class: string;
     confidence: number;
     isInfected: boolean;
-    isUnknown?: boolean;
-    message?: string;
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   
+  // Référence pour l'input file
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Ouvrir le sélecteur de fichiers
   const handleBrowseClick = () => {
     fileInputRef.current?.click();
   };
 
+  // Gestion du téléchargement d'image
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+      // Vérifier le type de fichier
       if (!file.type.startsWith('image/')) {
         alert('Veuillez sélectionner un fichier image valide');
         return;
@@ -29,11 +33,12 @@ export default function Home() {
       
       setSelectedImage(file);
       setPreviewUrl(URL.createObjectURL(file));
-      setPrediction(null);
+      setPrediction(null); // Reset previous prediction
       console.log('Fichier sélectionné:', file.name);
     }
   };
 
+  // Gestion du drag and drop
   const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     const file = event.dataTransfer.files[0];
@@ -48,58 +53,75 @@ export default function Home() {
     event.preventDefault();
   };
 
-  // 🔍 Fonction d'analyse réelle avec l'API Flask - VERSION CORRIGÉE
-  const analyzeImage = async () => {
-    if (!selectedImage) return;
-
-    setIsLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedImage);
+  // Simulation de l'analyse
+  // const analyzeImage = async () => {
+  //   if (!selectedImage) return;
+    
+  //   setIsLoading(true);
+    
+  //   // Simulation d'une requête API
+  //   setTimeout(() => {
+  //     const isInfected = Math.random() > 0.5;
+  //     const confidence = (Math.random() * 0.3 + 0.7) * 100;
       
-      const response = await fetch("https://projet-deeplearning.onrender.com/predict", {
-        method: "POST",
-        body: formData,
-      });
+  //     setPrediction({
+  //       class: isInfected ? 'Parasitée' : 'Non Infectée',
+  //       confidence: Math.round(confidence),
+  //       isInfected
+  //     });
+  //     setIsLoading(false);
+  //   }, 2000);
+  // };
+// 🔍 Fonction d'analyse réelle avec l'API Flask
+const analyzeImage = async () => {
+  if (!selectedImage) return;
 
-      if (!response.ok) {
-        throw new Error(`Erreur du serveur : ${response.status}`);
-      }
+  setIsLoading(true);
 
-      const data = await response.json();
+  try {
+    const formData = new FormData();
+    formData.append("file", selectedImage);
+    // Link avec le back
+    const response = await fetch("https://projet-deeplearning.onrender.com/predict", {
+      method: "POST",
+      body: formData,
+    });
 
-      if (data.error) {
-        alert("Erreur : " + data.error);
-        return;
-      }
-
-      // Gestion du cas "Inconnue"
-      if (data.prediction === "Inconnue") {
-        setPrediction({
-          class: "Inconnue",
-          confidence: Math.round(data.confidence),
-          isInfected: false,
-          isUnknown: true,
-          message: data.message || "⚠️ L'image ne semble pas correspondre à une cellule connue par le modèle."
-        });
-      } else {
-        // Cas normal (Parasitée ou Non infectée)
-        setPrediction({
-          class: data.prediction,
-          confidence: Math.round(data.confidence),
-          isInfected: data.prediction === "Parasitée",
-          isUnknown: false
-        });
-      }
-    } catch (error: unknown) {
-      console.error("Erreur lors de la requête :", error);
-      alert("Erreur lors de l'analyse. Vérifiez la connexion au serveur.");
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      throw new Error(`Erreur du serveur : ${response.status}`);
     }
-  };
 
+    const data = await response.json();
+
+    if (data.error) {
+      alert("Erreur : " + data.error);
+    }
+      if (data.prediction === "Inconnue") {
+      setPrediction({
+        class: "Inconnue",
+        confidence: Math.round(data.confidence),
+        isInfected: false,
+      });
+      return;
+    }
+
+    else {
+      // Adapter selon la réponse du backend Flask
+      setPrediction({
+        class: data.prediction,
+        confidence: Math.round(data.confidence),
+        isInfected: data.prediction === "Parasitée",
+      });
+    }
+  } catch (error: unknown) {
+    console.error("Erreur lors de la requête :", error);
+    alert("Erreur lors de l'analyse. Vérifiez la connexion au serveur.");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+  // Réinitialiser
   const resetAnalysis = () => {
     setSelectedImage(null);
     setPreviewUrl(null);
@@ -112,9 +134,192 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       
-      {/* ... (le reste de votre code reste identique) ... */}
+    {/* Hero Section */}
+      <section id="accueil" className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
+              Détection Intelligente du 
+              <span className="text-blue-600"> Paludisme</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
+              Utilisation de Intelligence Artificielle pour identifier les cellules sanguines 
+              infectées par le parasite Plasmodium avec une précision optimale.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <a 
+                href="#demo" 
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
+              >
+                Tester le Modèle
+              </a>
+              <a 
+                href="#modeles" 
+                className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300"
+              >
+                Voir les Modèles
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Statistics Section */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="p-6">
+              <div className="text-3xl font-bold text-blue-600 mb-2">99.2%</div>
+              <div className="text-gray-600">Précision du Meilleur Modèle</div>
+            </div>
+            <div className="p-6">
+              <div className="text-3xl font-bold text-green-600 mb-2">27,558</div>
+              <div className="text-gray-600">Images Entraînement</div>
+            </div>
+            <div className="p-6">
+              <div className="text-3xl font-bold text-purple-600 mb-2">3</div>
+              <div className="text-gray-600">Architectures CNN Testées</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Dataset Section */}
+      <section id="dataset" className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            Exploration du Dataset
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Cellules Sanguines Analysées</h3>
+              <p className="text-gray-600 mb-6">
+                Notre ensemble de données contient des images de cellules sanguines divisées en deux catégories :
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center p-4 bg-green-50 rounded-lg">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div>
+                    <h4 className="font-semibold text-green-700">Cellules Non Infectées</h4>
+                    <p className="text-green-600 text-sm">13,779 images saines</p>
+                  </div>
+                </div>
+                <div className="flex items-center p-4 bg-red-50 rounded-lg">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-4"></div>
+                  <div>
+                    <h4 className="font-semibold text-red-700">Cellules Parasitées</h4>
+                    <p className="text-red-600 text-sm">13,779 images infectées</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="bg-white p-4 rounded-lg shadow-md mb-2">
+                  <div className="w-32 h-32 bg-green-200 rounded-lg mx-auto flex items-center justify-center">
+                    <span className="text-green-600 font-semibold">Saine</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">Cellule Non Infectée</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white p-4 rounded-lg shadow-md mb-2">
+                  <div className="w-32 h-32 bg-red-200 rounded-lg mx-auto flex items-center justify-center">
+                    <span className="text-red-600 font-semibold">Parasitée</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">Cellule Infectée</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Models Section */}
+      <section id="modeles" className="py-16 bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            Modèles CNN Implémentés
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Modèle 1 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-blue-600 font-bold">1</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">CNN Simple</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Architecture basique
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  3 couches de convolution
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Entraînement rapide
+                </li>
+              </ul>
+            </div>
+
+            {/* Modèle 2 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-green-600 font-bold">2</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">CNN Avancé</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Architecture profonde
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Couches de dropout
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Batch normalization
+                </li>
+              </ul>
+            </div>
+
+            {/* Modèle 3 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-purple-600 font-bold">3</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Transfer Learning</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Modèle pré-entraîné
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Fine-tuning
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Meilleures performances
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
       
-      {/* Demo Section - VERSION CORRIGÉE pour afficher "Inconnue" */}
+      {/* Sections précédentes... */}
+      
+      {/* Demo Section - Version Corrigée */}
       <section id="demo" className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-6">
@@ -125,6 +330,7 @@ export default function Home() {
           </p>
           
           <div className="bg-white rounded-2xl shadow-2xl p-8">
+            {/* Input file caché mais fonctionnel */}
             <input
               type="file"
               ref={fileInputRef}
@@ -162,7 +368,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={(e) => {
-                        e.stopPropagation();
+                        e.stopPropagation(); // Empêche le déclenchement du click sur le parent
                         resetAnalysis();
                       }}
                       className="text-red-600 hover:text-red-700 text-sm font-medium"
@@ -212,14 +418,12 @@ export default function Home() {
               </div>
             )}
 
-            {/* RÉSULTATS - VERSION CORRIGÉE avec gestion "Inconnue" */}
+            {/* Résultats */}
             {prediction && (
               <div className={`p-6 rounded-lg border-2 ${
-                prediction.isUnknown 
-                  ? 'bg-yellow-50 border-yellow-200' 
-                  : prediction.isInfected 
-                    ? 'bg-red-50 border-red-200' 
-                    : 'bg-green-50 border-green-200'
+                prediction.isInfected 
+                  ? 'bg-red-50 border-red-200' 
+                  : 'bg-green-50 border-green-200'
               }`}>
                 <h4 className="text-xl font-semibold text-gray-900 mb-4">
                   Résultat de lanalyse :
@@ -229,11 +433,7 @@ export default function Home() {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Statut :</span>
                     <span className={`font-semibold ${
-                      prediction.isUnknown 
-                        ? 'text-yellow-600' 
-                        : prediction.isInfected 
-                          ? 'text-red-600' 
-                          : 'text-green-600'
+                      prediction.isInfected ? 'text-red-600' : 'text-green-600'
                     }`}>
                       {prediction.class}
                     </span>
@@ -250,30 +450,19 @@ export default function Home() {
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 
                         className={`h-2 rounded-full ${
-                          prediction.isUnknown 
-                            ? 'bg-yellow-500' 
-                            : prediction.isInfected 
-                              ? 'bg-red-500' 
-                              : 'bg-green-500'
+                          prediction.isInfected ? 'bg-red-500' : 'bg-green-500'
                         }`}
                         style={{ width: `${prediction.confidence}%` }}
                       ></div>
                     </div>
                   </div>
                   
-                  {/* Message selon le type de résultat */}
                   <div className={`mt-4 p-3 rounded-md ${
-                    prediction.isUnknown 
-                      ? 'bg-yellow-100 text-yellow-800' 
-                      : prediction.isInfected 
-                        ? 'bg-red-100 text-red-800' 
-                        : 'bg-green-100 text-green-800'
+                    prediction.isInfected 
+                      ? 'bg-red-100 text-red-800' 
+                      : 'bg-green-100 text-green-800'
                   }`}>
-                    {prediction.isUnknown ? (
-                      <p className="text-sm">
-                        ⚠️ {prediction.message || "L'image ne semble pas correspondre à une cellule sanguine connue par le modèle."}
-                      </p>
-                    ) : prediction.isInfected ? (
+                    {prediction.isInfected ? (
                       <p className="text-sm">
                         ⚠️ Cette cellule semble infectée par le parasite Plasmodium. 
                         Consultez un professionnel de santé.
@@ -305,14 +494,12 @@ export default function Home() {
                 <li>• Ou glissez-déposez directement une image dans la zone</li>
                 <li>• Formats acceptés : JPG, PNG, JPEG</li>
                 <li>• Taille maximale recommandée : 5MB</li>
-                <li>• Le modèle peut indiquer Inconnue si limage ne correspond pas aux cellules entraînées</li>
               </ul>
             </div>
           </div>
         </div>
       </section>
-
-      {/* Footer */}
+       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
