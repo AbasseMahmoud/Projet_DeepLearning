@@ -81,7 +81,7 @@ const analyzeImage = async () => {
   try {
     const formData = new FormData();
     formData.append("file", selectedImage);
-
+    // Link avec le back
     const response = await fetch("https://projet-deeplearning.onrender.com/predict", {
       method: "POST",
       body: formData,
