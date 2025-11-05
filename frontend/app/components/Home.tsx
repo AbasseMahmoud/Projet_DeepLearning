@@ -201,14 +201,14 @@ const analyzeImage = async () => {
                   <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
                   <div>
                     <h4 className="font-semibold text-green-700">Cellules Non Infectées</h4>
-                    <p className="text-green-600 text-sm">13,779 images saines</p>
+                    <p className="text-green-600 text-sm">13,780 images saines</p>
                   </div>
                 </div>
                 <div className="flex items-center p-4 bg-red-50 rounded-lg">
                   <div className="w-3 h-3 bg-red-500 rounded-full mr-4"></div>
                   <div>
                     <h4 className="font-semibold text-red-700">Cellules Parasitées</h4>
-                    <p className="text-red-600 text-sm">13,779 images infectées</p>
+                    <p className="text-red-600 text-sm">13,780 images infectées</p>
                   </div>
                 </div>
               </div>
