@@ -52,7 +52,7 @@
 # if __name__ == '__main__':
 #     app.run(debug=True)
 
-import os
+
 from flask import Flask, request, jsonify
 import numpy as np
 import tensorflow as tf
@@ -94,32 +94,32 @@ def predict():
 
         model = get_model()
         prediction = model.predict(img_array)
-        prob = float(prediction[0][0])
+        print("Valeur renvoyée par le modèle :", prediction)
 
-        # Seuils de confiance
-        seuil_incertitude = 0.4  # entre 0.4 et 0.6 = doute
-        if 0.4 < prob < 0.6:
-            return jsonify({
-                'prediction': 'Inconnue',
-                'message': "⚠️ L'image ne semble pas correspondre à une cellule connue par le modèle.",
-                'confidence': round(prob * 100, 2)
-            }), 200
-        
-        # Si le modèle est sûr
-        if prob >= 0.5:
-            predicted_class = 'Parasitée'
-            confidence = prob * 100
-        else:
-            predicted_class = 'Non infectée'
-            confidence = (1 - prob) * 100
 
+        # Calcul correct de la classe et de la confiance
+        # Calcul correct de la classe et de la confiance
+        if prediction.shape[1] == 1:  # binaire
+            prob = float(prediction[0][0])
+            # Clamp la valeur entre 0 et 1
+            prob = min(max(prob, 0.0), 1.0)
+            if prob >= 0.5:
+                predicted_class = 'Parasitée'
+                confidence = prob * 100
+            else:
+                predicted_class = 'Non infectée'
+                confidence = (1 - prob) * 100
+        else:  # multi-classes
+            max_prob = float(np.max(prediction))
+            max_prob = min(max(max_prob, 0.0), 1.0)
+            predicted_class = classes[np.argmax(prediction)]
+            confidence = max_prob * 100
         return jsonify({
             'prediction': predicted_class,
-            'confidence': round(confidence, 2)
+            'confidence': round(confidence, 2)  # arrondi à 2 décimales
         })
     except Exception as e:
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
