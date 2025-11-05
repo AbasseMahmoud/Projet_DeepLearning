@@ -127,7 +127,157 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Statistics Section */}
+      <section className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+            <div className="p-6">
+              <div className="text-3xl font-bold text-blue-600 mb-2">99.2%</div>
+              <div className="text-gray-600">Précision du Meilleur Modèle</div>
+            </div>
+            <div className="p-6">
+              <div className="text-3xl font-bold text-green-600 mb-2">27,558</div>
+              <div className="text-gray-600">Images Entraînement</div>
+            </div>
+            <div className="p-6">
+              <div className="text-3xl font-bold text-purple-600 mb-2">3</div>
+              <div className="text-gray-600">Architectures CNN Testées</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
+      {/* Dataset Section */}
+      <section id="dataset" className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            Exploration du Dataset
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-2xl font-semibold text-gray-800 mb-4">Cellules Sanguines Analysées</h3>
+              <p className="text-gray-600 mb-6">
+                Notre ensemble de données contient des images de cellules sanguines divisées en deux catégories :
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center p-4 bg-green-50 rounded-lg">
+                  <div className="w-3 h-3 bg-green-500 rounded-full mr-4"></div>
+                  <div>
+                    <h4 className="font-semibold text-green-700">Cellules Non Infectées</h4>
+                    <p className="text-green-600 text-sm">13,780 images saines</p>
+                  </div>
+                </div>
+                <div className="flex items-center p-4 bg-red-50 rounded-lg">
+                  <div className="w-3 h-3 bg-red-500 rounded-full mr-4"></div>
+                  <div>
+                    <h4 className="font-semibold text-red-700">Cellules Parasitées</h4>
+                    <p className="text-red-600 text-sm">13,780 images infectées</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-center">
+                <div className="bg-white p-4 rounded-lg shadow-md mb-2">
+                  <div className="w-32 h-32 bg-green-200 rounded-lg mx-auto flex items-center justify-center">
+                    <span className="text-green-600 font-semibold">Saine</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">Cellule Non Infectée</p>
+              </div>
+              <div className="text-center">
+                <div className="bg-white p-4 rounded-lg shadow-md mb-2">
+                  <div className="w-32 h-32 bg-red-200 rounded-lg mx-auto flex items-center justify-center">
+                    <span className="text-red-600 font-semibold">Parasitée</span>
+                  </div>
+                </div>
+                <p className="text-sm text-gray-600">Cellule Infectée</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* Models Section */}
+      <section id="modeles" className="py-16 bg-gray-50 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12">
+            Modèles CNN Implémentés
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Modèle 1 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-blue-600 font-bold">1</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">CNN Simple</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Architecture basique
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  3 couches de convolution
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                  Entraînement rapide
+                </li>
+              </ul>
+            </div>
+
+            {/* Modèle 2 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-green-600 font-bold">2</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">CNN Avancé</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Architecture profonde
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Couches de dropout
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
+                  Batch normalization
+                </li>
+              </ul>
+            </div>
+
+            {/* Modèle 3 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition duration-300">
+              <div className="text-center mb-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-purple-600 font-bold">3</span>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Transfer Learning</h3>
+              </div>
+              <ul className="space-y-2 text-gray-600">
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Modèle pré-entraîné
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Fine-tuning
+                </li>
+                <li className="flex items-center">
+                  <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
+                  Meilleures performances
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
       {/* Demo Section */}
       <section id="demo" className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
