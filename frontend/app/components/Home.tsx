@@ -99,7 +99,7 @@ const analyzeImage = async () => {
       // Adapter selon la réponse du backend Flask
       setPrediction({
         class: data.prediction,
-        confidence: Math.round(data.confidence * 100),
+        confidence: Math.round(data.confidence),
         isInfected: data.prediction === "Parasitée",
       });
     }
