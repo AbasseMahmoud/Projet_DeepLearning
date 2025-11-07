@@ -12,28 +12,37 @@ export const useTheme = () => useContext(ThemeContext);
 
 // Provider de thème avec mode sombre manuel
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme');
-      return savedTheme === 'dark';
-    }
-    return false;
-  });
+  const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Initialiser le thème après le montage côté client
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    setIsDark(savedTheme === 'dark');
+    setMounted(true);
+  }, []);
 
   // Sauvegarder le thème dans localStorage et appliquer au document
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+    if (mounted) {
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      }
     }
-  }, [isDark]);
+  }, [isDark, mounted]);
 
   const toggleTheme = () => {
     setIsDark(prev => !prev);
   };
+
+  // Rendre rien jusqu'à ce que le composant soit monté pour éviter les erreurs d'hydratation
+  if (!mounted) {
+    return <>{children}</>;
+  }
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>

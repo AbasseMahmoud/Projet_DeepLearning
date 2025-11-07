@@ -16,6 +16,14 @@ export default function Home() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
   const handleBrowseClick = () => {
     fileInputRef.current?.click();
   };
@@ -450,7 +458,7 @@ export default function Home() {
                     />
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
-                    Fichier: {selectedImage?.name}
+                    Fichier: {selectedImage?.name} ({formatFileSize(selectedImage?.size || 0)})
                   </div>
                   <motion.button
                     type="button"
