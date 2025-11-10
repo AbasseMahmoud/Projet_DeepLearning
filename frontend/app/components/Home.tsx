@@ -335,7 +335,7 @@ export default function Home() {
                 <div className="w-12 h-12 bg-green-100 dark:bg-green-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-green-600 dark:text-green-400 font-bold">2</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">CNN Avancé</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">CNN intermédiaire</h3>
               </div>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li className="flex items-center">
