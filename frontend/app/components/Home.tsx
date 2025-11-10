@@ -366,20 +366,20 @@ export default function Home() {
                 <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/50 rounded-full flex items-center justify-center mx-auto mb-3">
                   <span className="text-purple-600 dark:text-purple-400 font-bold">3</span>
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">Transfer Learning</h3>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">CNN Avancé (réseau de neurones convolutionnel profond)</h3>
               </div>
               <ul className="space-y-2 text-gray-600 dark:text-gray-300">
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
-                  Modèle pré-entraîné
+                   Modèle personnalisé (CNN Avancé)
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
-                  Fine-tuning
+                  Apprentissage depuis zéro (From Scratch)
                 </li>
                 <li className="flex items-center">
                   <span className="w-2 h-2 bg-purple-500 rounded-full mr-3"></span>
-                  Meilleures performances
+                  Bonnes performances après plusieurs couches de convolution
                 </li>
               </ul>
             </motion.div>
