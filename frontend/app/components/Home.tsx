@@ -179,7 +179,7 @@ export default function Home() {
               className="p-6 hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.05 }}
             >
-              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">27,558</div>
+              <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">27,560</div>
               <div className="text-gray-600 dark:text-gray-300">Images Entraînement</div>
             </motion.div>
             <motion.div
