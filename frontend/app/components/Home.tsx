@@ -172,7 +172,7 @@ export default function Home() {
               className="p-6 hover:scale-105 transition-transform duration-300"
               whileHover={{ scale: 1.05 }}
             >
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">99.2%</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">96.24%</div>
               <div className="text-gray-600 dark:text-gray-300">Précision du Meilleur Modèle</div>
             </motion.div>
             <motion.div
