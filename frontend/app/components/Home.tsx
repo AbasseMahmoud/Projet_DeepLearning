@@ -467,7 +467,7 @@ export default function Home() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    Changer l&aposimage
+                    Changer l'image
                   </motion.button>
                 </motion.div>
               ) : (
@@ -508,7 +508,7 @@ export default function Home() {
                 <motion.button
                   onClick={analyzeImage}
                   disabled={isLoading}
-                  className="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
+                  className="bg-green-600 mt-3 hover:bg-green-700 disabled:bg-gray-400 text-white px-8 py-4 rounded-lg text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
