@@ -72,7 +72,7 @@ model = None
 def get_model():
     global model
     if model is None:
-        model = tf.keras.models.load_model("Model/best_model.h5")
+        model = tf.keras.models.load_model("Model/best_model3.h5")
     return model
 
 @app.route('/')

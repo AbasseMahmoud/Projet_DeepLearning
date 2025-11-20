@@ -51,12 +51,12 @@ function Navbar() {
               >
                 Résultats
               </a>
-              <a 
+              <Link
                 href="#demo" 
                 className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-full text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
               >
                 Tester
-              </a>
+              </Link>
             </div>
           </div>
 
