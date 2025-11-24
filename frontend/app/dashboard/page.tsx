@@ -427,9 +427,9 @@ const Dashboard = () => {
                 href="/dashboard"
                 className="text-2xl font-bold bg-gradient-to-br from-indigo-600 to-purple-600 bg-clip-text text-transparent"
               >
-                FraudShield
+               MalariaDetect
               </Link>
-              <p className="text-xs text-slate-500">AI Powered</p>
+              <p className="text-xs text-slate-500">I.A</p>
             </div>
           </div>
         </div>
@@ -445,7 +445,7 @@ const Dashboard = () => {
             },
             {
               id: "malaria-detection",
-              name: "Détection Paludisme",
+              name: "Détection",
               icon: "",
               onClick: () => setActiveTab("malaria-detection"),
             },
@@ -615,7 +615,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Statistiques */}
-                <motion.div
+                {/* <motion.div
                   className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -633,7 +633,7 @@ const Dashboard = () => {
                     <div className="text-2xl font-bold text-purple-600 mb-2">3</div>
                     <div className="text-sm text-purple-700 font-medium">Modèles testés</div>
                   </div>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Zone d'upload et analyse */}
                 <motion.div
