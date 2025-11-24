@@ -50,7 +50,7 @@ const LoginPage = () => {
         localStorage.setItem("fraud_is_logged_in", "true");
         localStorage.setItem("fraud_user_email", formData.email);
 
-        router.push("/admin");
+        router.push("/dashboard");
         return;
       } else {
         setIsError(true);

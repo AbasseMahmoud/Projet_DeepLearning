@@ -44,18 +44,18 @@ function Navbar() {
               >
                 Modèles
               </a>
-              <a 
+              {/* <a 
                 href="#resultats" 
                 className="text-white hover:text-blue-200 px-3 py-2 rounded-md text-lg font-medium transition duration-300 border-b-2 border-transparent hover:border-white"
               >
                 Résultats
-              </a>
-              <Link
+              </a> */}
+              {/* <Link
                 href="#demo" 
                 className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-full text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
               >
                 Tester
-              </Link>
+              </Link> */}
               <Link
                 href="/login" 
                 className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-full text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
@@ -120,17 +120,17 @@ function Navbar() {
               >
                 Modèles
               </a>
-              <a 
+              {/* <a 
                 href="#resultats" 
                 className="text-white hover:bg-blue-600 block px-3 py-3 rounded-md text-base font-medium transition duration-300"
               >
                 Résultats
-              </a>
+              </a> */}
               <a 
-                href="#demo" 
+                href="/login" 
                 className="bg-white text-blue-600 hover:bg-blue-50 block px-3 py-3 rounded-md text-base font-semibold text-center transition duration-300 mt-4"
               >
-                Tester le Modèle
+                 Se connecter
               </a>
             </div>
           </div>
