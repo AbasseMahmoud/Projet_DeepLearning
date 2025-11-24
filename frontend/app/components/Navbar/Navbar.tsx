@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../sombre';
 import Link from 'next/link';
-
 function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isDark, toggleTheme } = useTheme();
@@ -56,6 +55,12 @@ function Navbar() {
                 className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-full text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
               >
                 Tester
+              </Link>
+              <Link
+                href="/login" 
+                className="bg-white text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-full text-lg font-semibold transition duration-300 shadow-lg hover:shadow-xl"
+              >
+                Se connecter
               </Link>
             </div>
           </div>
