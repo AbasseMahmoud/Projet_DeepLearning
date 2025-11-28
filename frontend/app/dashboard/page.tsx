@@ -919,7 +919,7 @@ const Dashboard = () => {
                 </motion.div>
 
                 {/* Alertes de fraude */}
-                <motion.div
+                {/* <motion.div
                   className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200/60"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -935,7 +935,7 @@ const Dashboard = () => {
                     {formatNumber(dashboardStats.fraudAlerts)}
                   </div>
                   <p className="text-sm text-slate-600">Détections suspectes</p>
-                </motion.div>
+                </motion.div> */}
 
                 {/* Taux de détection */}
                 <motion.div
