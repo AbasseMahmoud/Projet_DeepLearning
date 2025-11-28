@@ -979,7 +979,7 @@ const Dashboard = () => {
                       Historique des Analyses
                     </h2>
                     <p className="text-slate-600">
-                      Consultation des analyses précédentes avec date, heure et résultats
+                      Consultation des analyses précédentes
                     </p>
                   </div>
                   {analysisHistory.length > 0 && (
