@@ -81,6 +81,23 @@ const Dashboard = () => {
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
+  // États pour le stockage persistant des images analysées
+  const [totalParasiteImages, setTotalParasiteImages] = useState<number>(0);
+  const [totalSaineImages, setTotalSaineImages] = useState<number>(0);
+
+  // Charger les totaux depuis le localStorage au démarrage
+  useEffect(() => {
+    const savedParasite = localStorage.getItem("totalParasiteImages");
+    const savedSaine = localStorage.getItem("totalSaineImages");
+    
+    if (savedParasite) {
+      setTotalParasiteImages(parseInt(savedParasite));
+    }
+    if (savedSaine) {
+      setTotalSaineImages(parseInt(savedSaine));
+    }
+  }, []);
+
   // Vérifier si l'utilisateur est connecté - version ULTIME
   useEffect(() => {
     let isMounted = true;
@@ -154,9 +171,9 @@ const Dashboard = () => {
           totalTransactions: 1247,
           fraudAlerts: 23,
           detectionRate: 98.2,
-          totalImagesAnalyzed: 27560,
-          infectedImages: 13780,
-          healthyImages: 13780,
+          totalImagesAnalyzed: totalParasiteImages + totalSaineImages,
+          infectedImages: totalParasiteImages,
+          healthyImages: totalSaineImages,
           recentActivity: [
             { type: "Transaction validée", status: "success", timestamp: "Il y a 2 min" },
             { type: "Alerte de fraude détectée", status: "error", timestamp: "Il y a 5 min" },
@@ -183,11 +200,23 @@ const Dashboard = () => {
     const interval = setInterval(loadDashboardStats, 30000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [totalParasiteImages, totalSaineImages]);
 
   // Mettre à jour les statistiques après chaque analyse d'image
   useEffect(() => {
     if (prediction) {
+      // Mettre à jour les totaux persistants
+      if (prediction.isInfected) {
+        const newTotal = totalParasiteImages + 1;
+        setTotalParasiteImages(newTotal);
+        localStorage.setItem("totalParasiteImages", newTotal.toString());
+      } else {
+        const newTotal = totalSaineImages + 1;
+        setTotalSaineImages(newTotal);
+        localStorage.setItem("totalSaineImages", newTotal.toString());
+      }
+
+      // Mettre à jour les stats du dashboard
       setDashboardStats(prev => ({
         ...prev,
         totalImagesAnalyzed: prev.totalImagesAnalyzed + 1,
@@ -595,7 +624,7 @@ const Dashboard = () => {
               <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-8">
                 
                 {/* En-tête de la section */}
-                <div className="text-center mb-8">
+                {/* <div className="text-center mb-8">
                   <motion.h2
                     className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
                     initial={{ opacity: 0, y: 20 }}
@@ -612,28 +641,43 @@ const Dashboard = () => {
                   >
                     Détection automatique du parasite Plasmodium grâce à l'intelligence artificielle
                   </motion.p>
-                </div>
+                </div> */}
 
-                {/* Statistiques */}
-                {/* <motion.div
+                {/* Statistiques - AJOUT DES NOUVELLES CARDS */}
+                <motion.div
                   className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                  <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
+                  {/* Card Images Parasitées */}
+                  {/* <div className="bg-red-50 rounded-xl p-6 text-center border border-red-100">
+                    <div className="text-2xl font-bold text-red-600 mb-2">
+                      {formatNumber(dashboardStats.infectedImages)}
+                    </div>
+                    <div className="text-sm text-red-700 font-medium">Images Parasitées</div>
+                    <div className="text-xs text-red-500 mt-1">
+                      {((dashboardStats.infectedImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}% du total
+                    </div>
+                  </div> */}
+
+                  {/* Card Images Saines */}
+                  {/* <div className="bg-green-50 rounded-xl p-6 text-center border border-green-100">
+                    <div className="text-2xl font-bold text-green-600 mb-2">
+                      {formatNumber(dashboardStats.healthyImages)}
+                    </div>
+                    <div className="text-sm text-green-700 font-medium">Images Saines</div>
+                    <div className="text-xs text-green-500 mt-1">
+                      {((dashboardStats.healthyImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}% du total
+                    </div>
+                  </div> */}
+
+                  {/* Card Précision */}
+                  {/* <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
                     <div className="text-2xl font-bold text-blue-600 mb-2">96.08%</div>
                     <div className="text-sm text-blue-700 font-medium">Précision du modèle</div>
-                  </div>
-                  <div className="bg-green-50 rounded-xl p-6 text-center border border-green-100">
-                    <div className="text-2xl font-bold text-green-600 mb-2">{formatNumber(dashboardStats.totalImagesAnalyzed)}</div>
-                    <div className="text-sm text-green-700 font-medium">Images analysées</div>
-                  </div>
-                  <div className="bg-purple-50 rounded-xl p-6 text-center border border-purple-100">
-                    <div className="text-2xl font-bold text-purple-600 mb-2">3</div>
-                    <div className="text-sm text-purple-700 font-medium">Modèles testés</div>
-                  </div>
-                </motion.div> */}
+                  </div> */}
+                </motion.div>
 
                 {/* Zone d'upload et analyse */}
                 <motion.div
@@ -642,6 +686,7 @@ const Dashboard = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
+                  {/* ... (le reste du code de la section détection reste identique) ... */}
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -897,9 +942,9 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {/* Grille de statistiques */}
+              {/* Grille de statistiques - NOUVELLES CARDS POUR LES TOTAUX */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                {/* Transactions totales */}
+                {/* Total Images Parasitées */}
                 <motion.div
                   className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200/60"
                   initial={{ opacity: 0, y: 20 }}
@@ -907,35 +952,35 @@ const Dashboard = () => {
                   transition={{ duration: 0.4 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-900">Transactions</h3>
-                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                      <span className="text-blue-600 text-lg">💳</span>
+                    <h3 className="text-lg font-semibold text-slate-900">Images Parasitées</h3>
+                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
+                      <span className="text-red-600 text-lg">🦠</span>
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-slate-900 mb-2">
-                    {formatNumber(dashboardStats.totalTransactions)}
+                  <div className="text-3xl font-bold text-red-600 mb-2">
+                    {formatNumber(totalParasiteImages)}
                   </div>
                   <p className="text-sm text-slate-600">Total analysées</p>
                 </motion.div>
 
-                {/* Alertes de fraude */}
-                {/* <motion.div
+                {/* Total Images Saines */}
+                <motion.div
                   className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200/60"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-900">Alertes Fraude</h3>
-                    <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
-                      <span className="text-red-600 text-lg">⚠️</span>
+                    <h3 className="text-lg font-semibold text-slate-900">Images Saines</h3>
+                    <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+                      <span className="text-green-600 text-lg">✅</span>
                     </div>
                   </div>
-                  <div className="text-3xl font-bold text-red-600 mb-2">
-                    {formatNumber(dashboardStats.fraudAlerts)}
+                  <div className="text-3xl font-bold text-green-600 mb-2">
+                    {formatNumber(totalSaineImages)}
                   </div>
-                  <p className="text-sm text-slate-600">Détections suspectes</p>
-                </motion.div> */}
+                  <p className="text-sm text-slate-600">Total analysées</p>
+                </motion.div>
 
                 {/* Taux de détection */}
                 <motion.div
@@ -964,38 +1009,38 @@ const Dashboard = () => {
                   transition={{ duration: 0.4, delay: 0.3 }}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-slate-900">Images Analysées</h3>
+                    <h3 className="text-lg font-semibold text-slate-900">Total Images</h3>
                     <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
                       <span className="text-purple-600 text-lg">🔬</span>
                     </div>
                   </div>
                   <div className="text-3xl font-bold text-purple-600 mb-2">
-                    {formatNumber(dashboardStats.totalImagesAnalyzed)}
+                    {formatNumber(totalParasiteImages + totalSaineImages)}
                   </div>
-                  <p className="text-sm text-slate-600">Total des analyses</p>
+                  <p className="text-sm text-slate-600">Analyses effectuées</p>
                 </motion.div>
               </div>
 
               {/* Deuxième ligne de statistiques */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                {/* Images infectées vs saines */}
+                {/* Répartition Images infectées vs saines */}
                 <motion.div
                   className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200/60"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.4 }}
                 >
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Statut des Images</h3>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Répartition des Analyses</h3>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <div className="flex items-center space-x-3">
                         <div className="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span className="text-slate-700">Images infectées</span>
+                        <span className="text-slate-700">Images parasitées</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-semibold text-slate-900">{formatNumber(dashboardStats.infectedImages)}</span>
+                        <span className="font-semibold text-slate-900">{formatNumber(totalParasiteImages)}</span>
                         <span className="text-sm text-slate-500 ml-2">
-                          ({((dashboardStats.infectedImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}%)
+                          ({((totalParasiteImages / (totalParasiteImages + totalSaineImages)) * 100 || 0).toFixed(1)}%)
                         </span>
                       </div>
                     </div>
@@ -1005,9 +1050,9 @@ const Dashboard = () => {
                         <span className="text-slate-700">Images saines</span>
                       </div>
                       <div className="text-right">
-                        <span className="font-semibold text-slate-900">{formatNumber(dashboardStats.healthyImages)}</span>
+                        <span className="font-semibold text-slate-900">{formatNumber(totalSaineImages)}</span>
                         <span className="text-sm text-slate-500 ml-2">
-                          ({((dashboardStats.healthyImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}%)
+                          ({((totalSaineImages / (totalParasiteImages + totalSaineImages)) * 100 || 0).toFixed(1)}%)
                         </span>
                       </div>
                     </div>
@@ -1018,8 +1063,8 @@ const Dashboard = () => {
                         style={{ 
                           width: '100%',
                           background: `linear-gradient(90deg, 
-                            red ${(dashboardStats.infectedImages / dashboardStats.totalImagesAnalyzed) * 100 || 0}%, 
-                            green ${(dashboardStats.infectedImages / dashboardStats.totalImagesAnalyzed) * 100 || 0}%)` 
+                            red ${(totalParasiteImages / (totalParasiteImages + totalSaineImages)) * 100 || 0}%, 
+                            green ${(totalParasiteImages / (totalParasiteImages + totalSaineImages)) * 100 || 0}%)` 
                         }}
                       ></div>
                     </div>
