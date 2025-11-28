@@ -34,6 +34,18 @@ interface DashboardStats {
   }[];
 }
 
+// Interface pour l'historique des analyses
+interface AnalysisHistory {
+  id: string;
+  timestamp: Date;
+  imageName: string;
+  imageType: string;
+  result: string;
+  confidence: number;
+  isInfected: boolean;
+  fileSize?: number;
+}
+
 const Dashboard = () => {
   const router = useRouter();
 
@@ -85,16 +97,33 @@ const Dashboard = () => {
   const [totalParasiteImages, setTotalParasiteImages] = useState<number>(0);
   const [totalSaineImages, setTotalSaineImages] = useState<number>(0);
 
-  // Charger les totaux depuis le localStorage au démarrage
+  // État pour l'historique des analyses
+  const [analysisHistory, setAnalysisHistory] = useState<AnalysisHistory[]>([]);
+
+  // Charger les totaux et l'historique depuis le localStorage au démarrage
   useEffect(() => {
     const savedParasite = localStorage.getItem("totalParasiteImages");
     const savedSaine = localStorage.getItem("totalSaineImages");
+    const savedHistory = localStorage.getItem("analysisHistory");
     
     if (savedParasite) {
       setTotalParasiteImages(parseInt(savedParasite));
     }
     if (savedSaine) {
       setTotalSaineImages(parseInt(savedSaine));
+    }
+    if (savedHistory) {
+      try {
+        const historyData = JSON.parse(savedHistory);
+        // Convertir les strings de date en objets Date
+        const parsedHistory = historyData.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.timestamp)
+        }));
+        setAnalysisHistory(parsedHistory);
+      } catch (error) {
+        console.error("Erreur lors du chargement de l'historique:", error);
+      }
     }
   }, []);
 
@@ -204,7 +233,24 @@ const Dashboard = () => {
 
   // Mettre à jour les statistiques après chaque analyse d'image
   useEffect(() => {
-    if (prediction) {
+    if (prediction && selectedImage) {
+      // Créer une nouvelle entrée d'historique
+      const newHistoryEntry: AnalysisHistory = {
+        id: Date.now().toString(),
+        timestamp: new Date(),
+        imageName: selectedImage.name,
+        imageType: selectedImage.type,
+        result: prediction.class,
+        confidence: prediction.confidence,
+        isInfected: prediction.isInfected,
+        fileSize: selectedImage.size
+      };
+
+      // Mettre à jour l'historique
+      const updatedHistory = [newHistoryEntry, ...analysisHistory];
+      setAnalysisHistory(updatedHistory);
+      localStorage.setItem("analysisHistory", JSON.stringify(updatedHistory));
+
       // Mettre à jour les totaux persistants
       if (prediction.isInfected) {
         const newTotal = totalParasiteImages + 1;
@@ -362,6 +408,23 @@ const Dashboard = () => {
     return new Intl.NumberFormat('fr-FR').format(num);
   };
 
+  // Fonction pour formater la date
+  const formatDate = (date: Date): string => {
+    return new Intl.DateTimeFormat('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date);
+  };
+
+  // Fonction pour effacer l'historique
+  const clearHistory = () => {
+    setAnalysisHistory([]);
+    localStorage.removeItem("analysisHistory");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 flex">
       {/* Messages Flash */}
@@ -478,6 +541,12 @@ const Dashboard = () => {
               icon: "",
               onClick: () => setActiveTab("malaria-detection"),
             },
+            {
+              id: "history",
+              name: "Historique",
+              icon: "📋",
+              onClick: () => setActiveTab("history"),
+            },
           ].map((item) => (
             <button
               key={item.id}
@@ -552,11 +621,17 @@ const Dashboard = () => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-slate-900">
-                  {activeTab === "malaria-detection" ? "Détection du Paludisme" : "Dashboard"}
+                  {activeTab === "malaria-detection" 
+                    ? "Détection du Paludisme" 
+                    : activeTab === "history"
+                    ? "Historique des Analyses"
+                    : "Dashboard"}
                 </h1>
                 <p className="text-slate-500">
                   {activeTab === "malaria-detection" 
                     ? "Analyse intelligente des cellules sanguines avec IA" 
+                    : activeTab === "history"
+                    ? "Consultation des analyses précédentes"
                     : "Tableau de bord en temps réel"}
                 </p>
               </div>
@@ -624,7 +699,7 @@ const Dashboard = () => {
               <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-8">
                 
                 {/* En-tête de la section */}
-                {/* <div className="text-center mb-8">
+                <div className="text-center mb-8">
                   <motion.h2
                     className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
                     initial={{ opacity: 0, y: 20 }}
@@ -641,43 +716,7 @@ const Dashboard = () => {
                   >
                     Détection automatique du parasite Plasmodium grâce à l'intelligence artificielle
                   </motion.p>
-                </div> */}
-
-                {/* Statistiques - AJOUT DES NOUVELLES CARDS */}
-                <motion.div
-                  className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.2 }}
-                >
-                  {/* Card Images Parasitées */}
-                  {/* <div className="bg-red-50 rounded-xl p-6 text-center border border-red-100">
-                    <div className="text-2xl font-bold text-red-600 mb-2">
-                      {formatNumber(dashboardStats.infectedImages)}
-                    </div>
-                    <div className="text-sm text-red-700 font-medium">Images Parasitées</div>
-                    <div className="text-xs text-red-500 mt-1">
-                      {((dashboardStats.infectedImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}% du total
-                    </div>
-                  </div> */}
-
-                  {/* Card Images Saines */}
-                  {/* <div className="bg-green-50 rounded-xl p-6 text-center border border-green-100">
-                    <div className="text-2xl font-bold text-green-600 mb-2">
-                      {formatNumber(dashboardStats.healthyImages)}
-                    </div>
-                    <div className="text-sm text-green-700 font-medium">Images Saines</div>
-                    <div className="text-xs text-green-500 mt-1">
-                      {((dashboardStats.healthyImages / dashboardStats.totalImagesAnalyzed) * 100 || 0).toFixed(1)}% du total
-                    </div>
-                  </div> */}
-
-                  {/* Card Précision */}
-                  {/* <div className="bg-blue-50 rounded-xl p-6 text-center border border-blue-100">
-                    <div className="text-2xl font-bold text-blue-600 mb-2">96.08%</div>
-                    <div className="text-sm text-blue-700 font-medium">Précision du modèle</div>
-                  </div> */}
-                </motion.div>
+                </div>
 
                 {/* Zone d'upload et analyse */}
                 <motion.div
@@ -686,7 +725,6 @@ const Dashboard = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.6, delay: 0.3 }}
                 >
-                  {/* ... (le reste du code de la section détection reste identique) ... */}
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -931,6 +969,132 @@ const Dashboard = () => {
                 </motion.div>
               </div>
             </div>
+          ) : activeTab === "history" ? (
+            // Section Historique
+            <div className="max-w-7xl mx-auto">
+              <div className="bg-white rounded-2xl shadow-lg border border-slate-200/60 p-8">
+                <div className="flex justify-between items-center mb-8">
+                  <div>
+                    <h2 className="text-3xl font-bold text-slate-900 mb-2">
+                      Historique des Analyses
+                    </h2>
+                    <p className="text-slate-600">
+                      Consultation des analyses précédentes avec date, heure et résultats
+                    </p>
+                  </div>
+                  {analysisHistory.length > 0 && (
+                    <motion.button
+                      onClick={clearHistory}
+                      className="px-4 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors shadow-lg shadow-red-500/25"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Effacer l'historique
+                    </motion.button>
+                  )}
+                </div>
+
+                {analysisHistory.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="w-24 h-24 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl text-slate-400">📋</span>
+                    </div>
+                    <h3 className="text-xl font-semibold text-slate-700 mb-2">
+                      Aucune analyse enregistrée
+                    </h3>
+                    <p className="text-slate-500 mb-6">
+                      Les analyses que vous effectuerez apparaîtront ici.
+                    </p>
+                    <button 
+                      onClick={() => setActiveTab("malaria-detection")}
+                      className="px-6 py-3 bg-indigo-500 text-white rounded-xl font-semibold hover:bg-indigo-600 transition-colors"
+                    >
+                      Effectuer une analyse
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                      {analysisHistory.map((analysis) => (
+                        <motion.div
+                          key={analysis.id}
+                          className={`border-2 rounded-xl p-6 transition-all duration-300 hover:shadow-lg ${
+                            analysis.isInfected
+                              ? 'border-red-200 bg-red-50 hover:border-red-300'
+                              : 'border-green-200 bg-green-50 hover:border-green-300'
+                          }`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-3 h-3 rounded-full ${
+                                analysis.isInfected ? 'bg-red-500' : 'bg-green-500'
+                              }`}></div>
+                              <span className={`font-semibold ${
+                                analysis.isInfected ? 'text-red-700' : 'text-green-700'
+                              }`}>
+                                {analysis.result}
+                              </span>
+                            </div>
+                            <span className="text-xs text-slate-500 bg-white px-2 py-1 rounded-lg border border-slate-200">
+                              {analysis.confidence}%
+                            </span>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div>
+                              <p className="text-sm font-medium text-slate-700 mb-1">Fichier analysé</p>
+                              <p className="text-sm text-slate-600 truncate">{analysis.imageName}</p>
+                            </div>
+
+                            <div>
+                              <p className="text-sm font-medium text-slate-700 mb-1">Date et heure</p>
+                              <p className="text-sm text-slate-600">{formatDate(analysis.timestamp)}</p>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className="text-sm font-medium text-slate-700 mb-1">Type</p>
+                                <p className="text-sm text-slate-600">{analysis.imageType}</p>
+                              </div>
+                              {analysis.fileSize && (
+                                <div>
+                                  <p className="text-sm font-medium text-slate-700 mb-1">Taille</p>
+                                  <p className="text-sm text-slate-600">{formatFileSize(analysis.fileSize)}</p>
+                                </div>
+                              )}
+                            </div>
+
+                            <div className="pt-3 border-t border-slate-200">
+                              <div className="flex justify-between items-center text-sm">
+                                <span className="text-slate-600">Niveau de confiance</span>
+                                <span className="font-semibold text-slate-700">{analysis.confidence}%</span>
+                              </div>
+                              <div className="w-full bg-slate-200 rounded-full h-2 mt-2">
+                                <div
+                                  className={`h-2 rounded-full ${
+                                    analysis.isInfected ? 'bg-red-500' : 'bg-green-500'
+                                  }`}
+                                  style={{ width: `${analysis.confidence}%` }}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+
+                    <div className="text-center pt-6 border-t border-slate-200">
+                      <p className="text-sm text-slate-500">
+                        {analysisHistory.length} analyse{analysisHistory.length > 1 ? 's' : ''} enregistrée{analysisHistory.length > 1 ? 's' : ''}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           ) : (
             // Contenu normal du Dashboard - APERÇU
             <div className="max-w-7xl mx-auto">
@@ -1105,9 +1269,12 @@ const Dashboard = () => {
               >
                 <h3 className="text-lg font-semibold text-slate-900 mb-4">Actions Rapides</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <button className="p-4 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors text-left">
-                    <div className="font-semibold mb-1">Voir les rapports</div>
-                    <div className="text-sm text-indigo-600">Analyses détaillées</div>
+                  <button 
+                    onClick={() => setActiveTab("history")}
+                    className="p-4 rounded-xl bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors text-left"
+                  >
+                    <div className="font-semibold mb-1">Voir l'historique</div>
+                    <div className="text-sm text-indigo-600">Analyses précédentes</div>
                   </button>
                   <button className="p-4 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 transition-colors text-left">
                     <div className="font-semibold mb-1">Exporter les données</div>
